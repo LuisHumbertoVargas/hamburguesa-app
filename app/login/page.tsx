@@ -24,7 +24,7 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(values) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     // Aquí iría la lógica de autenticación
   }
