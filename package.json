@@ -42,6 +42,7 @@
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
+    "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
@@ -50,6 +51,7 @@
     "eslint": "8.49.0",
     "eslint-config-next": "14.2.15",
     "input-otp": "^1.2.4",
+    "lottie-react": "^2.4.0",
     "lucide-react": "^0.446.0",
     "next": "14.2.15",
     "next-themes": "^0.3.0",
@@ -66,8 +68,6 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "vaul": "^0.9.9",
-    "zod": "^3.23.8",
-    "lottie-react": "^2.4.0",
-    "axios": "^1.6.8"
+    "zod": "^3.23.8"
   }
 }
