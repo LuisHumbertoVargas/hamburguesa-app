@@ -7,6 +7,7 @@ type CartItem = {
   name: string;
   price: number;
   quantity: number;
+  image: string;
 };
 
 type AppContextType = {
@@ -35,25 +36,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, []);
 
-  const addToCart = (item: CartItem) => {
-    setCart((prevCart) => {
-      const updatedCart = [...prevCart];
-      const existingItem = updatedCart.find((cartItem) => cartItem.id === item.id);
+  const addToCart = (newItem: CartItem) => {
+    setCart(currentCart => {
+      const existingItem = currentCart.find(item => item.id === newItem.id);
       if (existingItem) {
-        existingItem.quantity += 1;
+        return currentCart.map(item =>
+          item.id === newItem.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
       } else {
-        updatedCart.push({ ...item, quantity: 1 });
+        return [...currentCart, { ...newItem, quantity: 1 }];
       }
-      localStorage.setItem('cart', JSON.stringify(updatedCart));
-      return updatedCart;
     });
   };
 
   const removeFromCart = (id: number) => {
-    setCart((prevCart) => {
-      const updatedCart = prevCart.filter((item) => item.id !== id);
-      localStorage.setItem('cart', JSON.stringify(updatedCart));
-      return updatedCart;
+    setCart(currentCart => {
+      const existingItem = currentCart.find(item => item.id === id);
+      if (existingItem && existingItem.quantity > 1) {
+        return currentCart.map(item =>
+          item.id === id
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        );
+      } else {
+        return currentCart.filter(item => item.id !== id);
+      }
     });
   };
 
