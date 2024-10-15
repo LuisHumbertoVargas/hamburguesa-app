@@ -19,11 +19,11 @@ export default function CheckoutPage() {
 
   const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentInfo({ ...paymentInfo, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) {
       alert('Por favor, inicia sesión para continuar');
