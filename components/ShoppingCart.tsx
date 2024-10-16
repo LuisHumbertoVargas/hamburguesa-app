@@ -10,6 +10,7 @@ initMercadoPago('TU_CLAVE_PUBLICA_DE_MERCADO_PAGO');
 
 export function ShoppingCartComponent() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const { cart, addToCart, removeFromCart } = useAppContext();
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
@@ -17,6 +18,7 @@ export function ShoppingCartComponent() {
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
+    setShowSuccessAnimation(true);
     try {
       const response = await fetch('/api/create-preference', {
         method: 'POST',
@@ -29,7 +31,16 @@ export function ShoppingCartComponent() {
       setPreferenceId(data.id);
     } catch (error) {
       console.error('Error al crear la preferencia:', error);
+    } finally {
+      setTimeout(() => {
+        setShowSuccessAnimation(false);
+      }, 3000);
     }
+  };
+
+  // Asegúrate de que la función clearCart esté definida o importada
+  const clearCart = () => {
+    // Implementa la lógica para limpiar el carrito
   };
 
   return (
@@ -76,13 +87,20 @@ export function ShoppingCartComponent() {
               ))}
               <div className="mt-4 pt-2 border-t border-gray-200">
                 <p className="font-bold text-xl text-gray-800">Total: ${totalPrice.toFixed(2)}</p>
-                <Button onClick={() => alert('¡Gracias por tu compra!' )} className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white">
+                <Button onClick={handleCheckout} className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white">
                   Proceder al pago
                 </Button>
                 {preferenceId && <Wallet initialization={{ preferenceId }} />}
               </div>
             </>
           )}
+        </div>
+      )}
+      {showSuccessAnimation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl">
+            <p className="text-2xl font-bold text-green-600">¡Procesando pago!</p>
+          </div>
         </div>
       )}
     </div>

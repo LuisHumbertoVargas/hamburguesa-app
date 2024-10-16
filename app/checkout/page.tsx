@@ -1,12 +1,16 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/lib/context/AppContext';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Lottie from 'lottie-react';
+import successAnimation from '@/public/success-animation.json';
 
 export default function CheckoutPage() {
   const { cart, clearCart, user } = useAppContext();
@@ -16,6 +20,7 @@ export default function CheckoutPage() {
     expirationDate: '',
     cvv: '',
   });
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
@@ -26,7 +31,7 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) {
-      alert('Por favor, inicia sesión para continuar');
+      toast.error('Por favor, inicia sesión para continuar');
       router.push('/login');
       return;
     }
@@ -47,20 +52,43 @@ export default function CheckoutPage() {
       const data = await response.json();
 
       if (data.success) {
-        alert('Pago procesado con éxito');
-        clearCart();
-        router.push('/');
+        setShowSuccessAnimation(true);
+        const orderNumber = Math.floor(1000 + Math.random() * 9000); // Genera un número de orden aleatorio
+        const waitTime = Math.floor(15 + Math.random() * 16); // Tiempo de espera entre 15 y 30 minutos
+
+        toast.success(
+          <div>
+            <h2>¡Pago procesado con éxito!</h2>
+            <p>Número de orden: {orderNumber}</p>
+            <p>Tiempo de espera aproximado: {waitTime} minutos</p>
+          </div>,
+          {
+            autoClose: 5000,
+            onClose: () => {
+              clearCart();
+              router.push('/');
+            }
+          }
+        );
       } else {
-        alert('Error al procesar el pago: ' + data.message);
+        toast.error('Error al procesar el pago: ' + data.message);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error al procesar el pago');
+      toast.error('Error al procesar el pago');
     }
   };
 
   return (
     <div className="container mx-auto p-4">
+      <ToastContainer position="top-center" />
+      {showSuccessAnimation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="w-64 h-64">
+            <Lottie animationData={successAnimation} loop={false} />
+          </div>
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-6">Checkout</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>

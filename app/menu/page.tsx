@@ -33,35 +33,47 @@ export default function MenuPage() {
       try {
         const sections = [
           { title: 'Hamburguesas', query: 'burger and fries' },
-          { title: 'Complementos', query: 'fries and ketchup' },
+          { title: 'Complementos', query: 'fries and hotdog' },
           { title: 'Bebidas', query: 'sprite, coke, water' }
         ];
 
         const fetchedSections = await Promise.all(sections.map(async (section) => {
-          const response = await axios.get('https://api.spoonacular.com/food/menuItems/search', {
-            params: {
-              query: section.query,
-              number: 6,
-              apiKey: 'a0bbbb7c582b4c4fbd48dac4732993aa'
+          try {
+            const response = await axios.get('https://api.spoonacular.com/food/menuItems/search', {
+              params: {
+                query: section.query,
+                number: 6,
+                apiKey: '798699b2ae3a49db99d24e4271b40e4c'
+              }
+            });
+
+            console.log(`Respuesta para ${section.title}:`, response.data);
+
+            if (response.data.menuItems.length === 0) {
+              console.warn(`No se encontraron resultados para ${section.title}`);
+              return { title: section.title, items: [] };
             }
-          });
 
-          const items = response.data.menuItems.map((item: any) => ({
-            id: item.id,
-            name: item.title,
-            price: (item.price || Math.random() * 10 + 5).toFixed(2),
-            description: item.description || `Delicioso ${section.title.slice(0, -1).toLowerCase()}`,
-            image: item.image,
-            calories: item.calories,
-            ingredients: item.ingredients || []
-          }));
+            const items = response.data.menuItems.map((item: any) => ({
+              id: item.id,
+              name: item.title,
+              price: (item.price || Math.random() * 10 + 5).toFixed(2),
+              description: item.description || `Delicioso ${section.title.slice(0, -1).toLowerCase()}`,
+              image: item.image,
+              calories: item.calories,
+              ingredients: item.ingredients || []
+            }));
 
-          return { title: section.title, items };
+            return { title: section.title, items };
+          } catch (error: any) {
+            console.error(`Error al obtener ${section.title}:`, error.response?.data || error.message);
+            return { title: section.title, items: [] };
+          }
         }));
 
-        setMenuSections(fetchedSections);
+        setMenuSections(fetchedSections.filter(section => section.items.length > 0));
       } catch (error) {
-        console.error('Error fetching menu items:', error);
+        console.error('Error al obtener los elementos del menú:', error);
       }
     };
 
